@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="급등주 계산기">
+<meta name="theme-color" content="#0A0A0F">
+<title>급등주 계산기</title>
+<style>
+* { -webkit-box-sizing: border-box; box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { background: #0A0A0F; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  background: #0A0A0F; color: #F0F0F5;
+  min-height: 100vh; padding-bottom: 40px;
+}
+.header {
+  padding: 60px 20px 20px;
+  display: -webkit-flex; display: flex;
+  -webkit-align-items: flex-end; align-items: flex-end;
+  -webkit-justify-content: space-between; justify-content: space-between;
+}
+.app-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: #C8FF47; text-transform: uppercase; margin-bottom: 4px; }
+.app-title { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; color: #F0F0F5; line-height: 1.1; }
+.app-title span { color: #C8FF47; }
+.header-badge { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; padding: 5px 12px; border-radius: 20px; background: rgba(200,255,71,0.12); color: #C8FF47; border: 1px solid rgba(200,255,71,0.25); white-space: nowrap; }
+.main { padding: 0 16px; }
+.target-hero { background: #13131A; border: 1px solid rgba(255,255,255,0.14); border-radius: 16px; padding: 22px 20px 18px; margin-bottom: 12px; }
+.hero-label { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; color: #7A7A8C; text-transform: uppercase; margin-bottom: 8px; }
+.hero-value { font-size: 42px; font-weight: 800; letter-spacing: -0.04em; color: #C8FF47; line-height: 1; margin-bottom: 6px; }
+.hero-value span { font-size: 20px; font-weight: 600; margin-left: 2px; }
+.hero-sub { font-size: 13px; color: #7A7A8C; }
+.hero-sub b { color: #4ADE80; font-weight: 600; }
+.hero-pills { display: -webkit-flex; display: flex; gap: 6px; margin-top: 14px; -webkit-flex-wrap: wrap; flex-wrap: wrap; }
+.pill { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; border: 1px solid transparent; }
+.pill-up { background: rgba(74,222,128,0.12); color: #4ADE80; border-color: rgba(74,222,128,0.2); }
+.pill-amber { background: rgba(250,204,21,0.12); color: #FACC15; border-color: rgba(250,204,21,0.2); }
+.pill-blue { background: rgba(96,165,250,0.12); color: #60A5FA; border-color: rgba(96,165,250,0.2); }
+.stat-row { display: -webkit-flex; display: flex; gap: 8px; margin-bottom: 12px; }
+.stat { -webkit-flex: 1; flex: 1; background: #13131A; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 12px 8px; text-align: center; }
+.stat-label { font-size: 10px; color: #7A7A8C; font-weight: 500; margin-bottom: 4px; letter-spacing: 0.05em; }
+.stat-val { font-size: 15px; font-weight: 700; color: #F0F0F5; letter-spacing: -0.02em; }
+.stat-val.accent { color: #C8FF47; }
+.stat-val.amber { color: #FACC15; }
+.cond-grid { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.cond-item { width: calc(50% - 4px); background: #13131A; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 12px; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; gap: 8px; font-size: 12px; color: #7A7A8C; font-weight: 500; }
+.cond-item.ok { border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.05); color: #4ADE80; }
+.cond-item.fail { border-color: rgba(248,113,113,0.3); background: rgba(248,113,113,0.05); color: #F87171; }
+.cond-dot { width: 8px; height: 8px; border-radius: 50%; background: #7A7A8C; -webkit-flex-shrink: 0; flex-shrink: 0; }
+.cond-item.ok .cond-dot { background: #4ADE80; }
+.cond-item.fail .cond-dot { background: #F87171; }
+.input-card, .steps-card, .chart-card { background: #13131A; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 18px; margin-bottom: 12px; }
+.section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: #7A7A8C; text-transform: uppercase; margin-bottom: 14px; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; gap: 8px; }
+.section-label::after { content: ''; -webkit-flex: 1; flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+.input-grid { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; gap: 10px; }
+.input-group { display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; gap: 6px; width: calc(50% - 5px); }
+.input-group.full { width: 100%; }
+.input-group label { font-size: 11px; font-weight: 600; color: #7A7A8C; letter-spacing: 0.06em; text-transform: uppercase; }
+.input-group input { background: #1C1C26; border: 1px solid rgba(255,255,255,0.14); border-radius: 10px; color: #F0F0F5; font-size: 18px; font-weight: 600; padding: 12px 14px; width: 100%; outline: none; -webkit-appearance: none; appearance: none; font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; letter-spacing: -0.01em; }
+.input-group input:focus { border-color: #C8FF47; }
+.input-group input::-webkit-input-placeholder { color: #7A7A8C; font-weight: 400; }
+.slider-row { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; gap: 12px; margin-top: 14px; }
+.slider-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #7A7A8C; text-transform: uppercase; white-space: nowrap; }
+input[type="range"] { -webkit-appearance: none; appearance: none; -webkit-flex: 1; flex: 1; height: 4px; background: #1C1C26; border-radius: 2px; outline: none; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 24px; height: 24px; background: #C8FF47; border-radius: 50%; border: 3px solid #0A0A0F; }
+.slider-val { font-size: 16px; font-weight: 800; color: #C8FF47; min-width: 40px; text-align: right; letter-spacing: -0.02em; }
+.step-item { display: -webkit-flex; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: center; align-items: center; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.step-item:last-child { border-bottom: none; padding-bottom: 0; }
+.step-item:first-child { padding-top: 0; }
+.step-name { font-size: 13px; color: #7A7A8C; }
+.step-name.bold { color: #F0F0F5; font-weight: 600; }
+.step-num { font-size: 13px; font-weight: 700; color: #F0F0F5; }
+.step-num.accent { color: #C8FF47; font-size: 15px; }
+.floor-note { font-size: 11px; color: #FACC15; background: rgba(250,204,21,0.10); border: 1px solid rgba(250,204,21,0.2); border-radius: 8px; padding: 8px 12px; margin-top: 10px; line-height: 1.5; }
+.chart-legend { display: -webkit-flex; display: flex; gap: 12px; margin-bottom: 14px; -webkit-flex-wrap: wrap; flex-wrap: wrap; }
+.legend-item { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; gap: 5px; font-size: 11px; color: #7A7A8C; font-weight: 500; }
+.legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+.chart-wrap { position: relative; width: 100%; height: 180px; }
+.footer { padding: 16px 16px 8px; text-align: center; font-size: 11px; color: #7A7A8C; letter-spacing: 0.04em; line-height: 1.8; }
+.footer b { color: #C8FF47; font-weight: 600; }
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; appearance: none; margin: 0; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="app-eyebrow">주식 분석 도구</div>
+    <h1 class="app-title">급등주<span>.</span><br>계산기</h1>
+  </div>
+  <div class="header-badge" id="cond-badge">확인 중</div>
+</div>
+
+<div class="main">
+
+  <div class="target-hero">
+    <div class="hero-label">2차 상승 목표가</div>
+    <div class="hero-value" id="hero-val">4,648<span>원</span></div>
+    <div class="hero-sub">고점 대비 <b id="hero-upside">+43.5%</b> 추가 상승 여지</div>
+    <div class="hero-pills">
+      <span class="pill pill-up" id="pill1">1차 상승 678.8%</span>
+      <span class="pill pill-amber" id="pill2">배율 × 1.5</span>
+      <span class="pill pill-blue" id="pill3">적용률 1,018%</span>
+    </div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat"><div class="stat-label">저점</div><div class="stat-val" id="st-low">416</div></div>
+    <div class="stat"><div class="stat-label">고점</div><div class="stat-val amber" id="st-high">3,240</div></div>
+    <div class="stat"><div class="stat-label">목표가</div><div class="stat-val accent" id="st-target">4,648</div></div>
+  </div>
+
+  <div class="cond-grid">
+    <div class="cond-item" id="cond1"><div class="cond-dot"></div>100% 이상 상승</div>
+    <div class="cond-item" id="cond2"><div class="cond-dot"></div>20일선 지지</div>
+    <div class="cond-item" id="cond3"><div class="cond-dot"></div>월봉 살아있음</div>
+    <div class="cond-item" id="cond4"><div class="cond-dot"></div>전고점 돌파</div>
+  </div>
+
+  <div class="input-card">
+    <div class="section-label">종목 입력</div>
+    <div class="input-grid">
+      <div class="input-group full">
+        <label>종목명</label>
+        <input type="text" id="name" placeholder="예: 삼성전자 (선택)" autocomplete="off">
+      </div>
+      <div class="input-group">
+        <label>저점 (원)</label>
+        <input type="number" id="low" value="416" inputmode="numeric" min="1" placeholder="저점">
+      </div>
+      <div class="input-group">
+        <label>고점 (원)</label>
+        <input type="number" id="high" value="3240" inputmode="numeric" min="1" placeholder="고점">
+      </div>
+    </div>
+    <div class="slider-row">
+      <span class="slider-label">배율</span>
+      <input type="range" id="mult" min="1.0" max="3.0" step="0.1" value="1.5">
+      <span class="slider-val" id="mult-disp">1.5×</span>
+    </div>
+  </div>
+
+  <div class="steps-card">
+    <div class="section-label">계산 과정</div>
+    <div class="step-item"><span class="step-name">저점</span><span class="step-num" id="s-low">416원</span></div>
+    <div class="step-item"><span class="step-name">1차 고점</span><span class="step-num" id="s-high">3,240원</span></div>
+    <div class="step-item"><span class="step-name">1차 상승률</span><span class="step-num" id="s-pct">678.8%</span></div>
+    <div class="step-item">
+      <span class="step-name">× 배율 적용 <span id="s-floor-tag" style="font-size:10px;color:#FACC15;margin-left:4px"></span></span>
+      <span class="step-num" id="s-applied">1,018%</span>
+    </div>
+    <div class="step-item"><span class="step-name">계산식</span><span class="step-num" id="s-formula">저점 × 10.18 + 저점</span></div>
+    <div class="step-item"><span class="step-name bold">2차 목표가</span><span class="step-num accent" id="s-result">4,648원</span></div>
+    <div class="floor-note" id="floor-note" style="display:none"></div>
+  </div>
+
+  <div class="chart-card">
+    <div class="section-label">가격 비교</div>
+    <div class="chart-legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#4ADE80"></span>저점</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#FACC15"></span>1차 고점</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#C8FF47"></span>2차 목표가</span>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="chart" role="img" aria-label="저점, 1차 고점, 2차 목표가 비교 차트">저점, 1차 고점, 2차 목표가를 비교한 막대 차트.</canvas>
+    </div>
+  </div>
+
+  <div class="footer">
+    <b>급등주 계산기</b> — 투자 참고용 도구입니다.<br>
+    실제 투자는 본인의 판단과 책임 하에 진행하세요.
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+var chart;
+function f(n){ return Math.round(n).toLocaleString('ko-KR'); }
+function fp(n){ return n.toFixed(1)+'%'; }
+
+function calc(){
+  var low  = parseFloat(document.getElementById('low').value)  || 0;
+  var high = parseFloat(document.getElementById('high').value) || 0;
+  var mult = parseFloat(document.getElementById('mult').value) || 1.5;
+  document.getElementById('mult-disp').textContent = mult.toFixed(1)+'×';
+
+  if(low <= 0 || high <= low){
+    document.getElementById('hero-val').innerHTML = '—<span>원</span>';
+    return;
+  }
+
+  // 1차 상승률
+  var pct = (high - low) / low * 100;
+
+  // 상승률 × 배율 → 소수점 버림(floor)
+  var appliedRaw   = pct * mult;
+  var appliedFloor = Math.floor(appliedRaw);
+  var wasFloored   = (appliedRaw !== appliedFloor);
+
+  // 목표가 = 저점 × (적용률/100) + 저점
+  var target = low * (appliedFloor / 100) + low;
+  var upside = (target - high) / high * 100;
+
+  // Hero
+  document.getElementById('hero-val').innerHTML = f(target)+'<span>원</span>';
+  document.getElementById('hero-upside').textContent = '+'+fp(upside);
+  document.getElementById('pill1').textContent = '1차 상승 '+fp(pct);
+  document.getElementById('pill2').textContent = '배율 × '+mult.toFixed(1);
+  document.getElementById('pill3').textContent = '적용률 '+appliedFloor+'%';
+
+  // Stats
+  document.getElementById('st-low').textContent    = f(low);
+  document.getElementById('st-high').textContent   = f(high);
+  document.getElementById('st-target').textContent = f(target);
+
+  // Steps
+  document.getElementById('s-low').textContent     = f(low)+'원';
+  document.getElementById('s-high').textContent    = f(high)+'원';
+  document.getElementById('s-pct').textContent     = fp(pct);
+  document.getElementById('s-applied').textContent = appliedFloor+'%';
+  document.getElementById('s-formula').textContent = '저점 × '+(appliedFloor/100).toFixed(2)+' + 저점';
+  document.getElementById('s-result').textContent  = f(target)+'원';
+
+  // 소수점 버림 안내
+  var floorNote = document.getElementById('floor-note');
+  var floorTag  = document.getElementById('s-floor-tag');
+  if(wasFloored){
+    floorTag.textContent = '(소수점 버림 적용)';
+    floorNote.style.display = 'block';
+    floorNote.textContent =
+      '※ ' + fp(appliedRaw) + ' → ' + appliedFloor + '% 로 소수점 버림 적용';
+  } else {
+    floorTag.textContent = '';
+    floorNote.style.display = 'none';
+  }
+
+  // 100% 조건
+  var c1 = document.getElementById('cond1');
+  if(pct >= 100){
+    c1.className = 'cond-item ok';
+    c1.innerHTML = '<div class="cond-dot"></div>100% 이상 ✓';
+  } else {
+    c1.className = 'cond-item fail';
+    c1.innerHTML = '<div class="cond-dot"></div>100% 미달 ✗';
+  }
+
+  // 상단 배지
+  var badge = document.getElementById('cond-badge');
+  if(pct >= 100){
+    badge.textContent = '조건 충족';
+    badge.style.background   = 'rgba(74,222,128,0.15)';
+    badge.style.color        = '#4ADE80';
+    badge.style.borderColor  = 'rgba(74,222,128,0.3)';
+  } else {
+    badge.textContent = '조건 미달';
+    badge.style.background   = 'rgba(248,113,113,0.15)';
+    badge.style.color        = '#F87171';
+    badge.style.borderColor  = 'rgba(248,113,113,0.3)';
+  }
+
+  drawChart(low, high, target);
+}
+
+function drawChart(low, high, target){
+  if(chart){ chart.destroy(); }
+  chart = new Chart(document.getElementById('chart'),{
+    type: 'bar',
+    data:{
+      labels:['저점','1차 고점','2차 목표가'],
+      datasets:[{
+        data:[low, high, target],
+        backgroundColor:['rgba(74,222,128,0.85)','rgba(250,204,21,0.85)','rgba(200,255,71,0.85)'],
+        borderColor:['#4ADE80','#FACC15','#C8FF47'],
+        borderWidth:1,
+        borderRadius:6
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'#1C1C26',
+          borderColor:'rgba(255,255,255,0.12)',
+          borderWidth:1,
+          titleColor:'#7A7A8C',
+          bodyColor:'#F0F0F5',
+          padding:10,
+          callbacks:{ label: function(c){ return ' '+Math.round(c.parsed.y).toLocaleString('ko-KR')+'원'; } }
+        }
+      },
+      scales:{
+        x:{ grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'#7A7A8C',font:{size:11}}, border:{color:'rgba(255,255,255,0.08)'} },
+        y:{ grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'#7A7A8C',font:{size:10}, callback:function(v){ return Math.round(v).toLocaleString('ko-KR'); }}, border:{color:'rgba(255,255,255,0.08)'}, min:0 }
+      }
+    }
+  });
+}
+
+var ids = ['low','high','mult','name'];
+for(var i=0; i<ids.length; i++){
+  document.getElementById(ids[i]).addEventListener('input', calc);
+}
+calc();
+</script>
+</body>
+</html>
